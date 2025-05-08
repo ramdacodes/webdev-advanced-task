@@ -8,8 +8,18 @@ class Mark extends Model
 {
     protected $fillable = [
         'student_id',
-        'code',
+        'course_id',
         'number',
         'mark',
     ];
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class, 'student_id', 'id');
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class, 'course_id', 'id');
+    }
 }
