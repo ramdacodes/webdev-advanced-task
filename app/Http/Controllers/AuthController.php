@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
@@ -15,7 +16,7 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->only('username', 'Password');
+        $credentials = $request->only('username', 'password');
 
         $user = User::where('username', $credentials['username'])->where(
             'active',
@@ -23,19 +24,19 @@ class AuthController extends Controller
         )->first();
 
         if ($user) {
-            if (password_verify($credentials['password'], $user->Password)) {
-                Auth::login($user);
+            if (Hash::check($credentials['password'], $user->password)) {
+                Session::put('user', $user);
 
                 return redirect()->route('home');
             }
         }
 
-        return back()->withErrors(['login' => 'username atau Password salah / tidak aktif.']);
+        return back()->withErrors(['login' => 'username atau password salah / tidak aktif.']);
     }
 
     public function logout()
     {
-        Auth::logout();
+        Session::forget('user');
 
         return redirect()->route('login');
     }
